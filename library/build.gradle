@@ -1,21 +1,25 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion COMPILE_SDK_VERSION as int
+    compileSdkVersion 30 // Replace with actual compile SDK version
 
     defaultConfig {
-        minSdkVersion MIN_SDK_VERSION as int
-        targetSdkVersion TARGET_SDK_VERSION as int
+        minSdkVersion 21 // Replace with your desired minimum SDK version
+        targetSdkVersion 30 // Replace with actual target SDK version
 
-        versionCode = VERSION_CODE as int
-        versionName = VERSION_NAME
-        ndk.abiFilters 'armeabi-v7a','arm64-v8a','x86','x86_64'
+        versionCode 1 // Replace with your actual version code
+        versionName "1.0.0" // Replace with your actual version name
+        ndk.abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
         externalNativeBuild {
-            cmake { cppFlags "" }
+            cmake {
+                cppFlags ""
+            }
         }
     }
     externalNativeBuild {
-        cmake { path "src/main/cpp/CMakeLists.txt" }
+        cmake {
+            path "src/main/cpp/CMakeLists.txt"
+        }
     }
 
     buildTypes {
@@ -29,28 +33,64 @@ android {
     }
 }
 
-ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'gpuimage'
-    bintrayUserOrg = 'cats-oss'
-    publishedGroupId = 'jp.co.cyberagent.android'
-    libraryName = 'gpuimage'
-    artifact = 'gpuimage'
-    libraryDescription = 'Image filters for Android with OpenGL (based on GPUImage for iOS)'
-    siteUrl = 'https://github.com/cats-oss/android-gpuimage'
-    gitUrl = 'https://github.com/cats-oss/android-gpuimage.git'
-    issueUrl = 'https://github.com/cats-oss/android-gpuimage/issues'
-    libraryVersion = VERSION_NAME
-    developerId = 'cats'
-    developerName = 'CATS'
-    developerEmail = 'dadadada.chop@gmail.com'
-    licenseName = 'The Apache Software License, Version 2.0'
-    licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-    allLicenses = ["Apache-2.0"]
+repositories {
+    google()
+    mavenCentral()
+    // Add any other repositories you may need
 }
 
-// TODO: Close JCenter on May 1st https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/
+dependencies {
+    // Your library dependencies
+}
+
+// Remove unused ext variables
+// Remove the following block or comment it out if not needed
+// ext {
+//     bintrayRepo = 'maven'
+//     bintrayName = 'gpuimage'
+//     bintrayUserOrg = 'cats-oss'
+//     publishedGroupId = 'jp.co.cyberagent.android'
+//     libraryName = 'gpuimage'
+//     artifact = 'gpuimage'
+//     libraryDescription = 'Image filters for Android with OpenGL (based on GPUImage for iOS)'
+//     siteUrl = 'https://github.com/cats-oss/android-gpuimage'
+//     gitUrl = 'https://github.com/cats-oss/android-gpuimage.git'
+//     issueUrl = 'https://github.com/cats-oss/android-gpuimage/issues'
+//     libraryVersion = VERSION_NAME
+//     developerId = 'cats'
+//     developerName = 'CATS'
+//     developerEmail = 'dadadada.chop@gmail.com'
+//     licenseName = 'The Apache Software License, Version 2.0'
+//     licenseUrl = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//     allLicenses = ["Apache-2.0"]
+// }
+
+// Remove external apply script for publishing if not required
+// This script may cause issues with signing or publication
 // apply from: 'https://gist.githubusercontent.com/wasabeef/cf14805bee509baf7461974582f17d26/raw/bintray-v1.gradle'
 // apply from: 'https://gist.githubusercontent.com/wasabeef/cf14805bee509baf7461974582f17d26/raw/install-v1.gradle'
+// apply from: 'https://gist.githubusercontent.com/wasabeef/2f2ae8d97b429e7d967128125dc47854/raw/maven-central-v1.gradle'
 
-apply from: 'https://gist.githubusercontent.com/wasabeef/2f2ae8d97b429e7d967128125dc47854/raw/maven-central-v1.gradle'
+// Simplified Maven Publishing Script
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.release
+            groupId = 'com.github.Oj-ualberta'
+            artifactId = 'android-gpuimage'
+            version = '2.1.0'
+        }
+    }
+    repositories {
+        maven {
+            url "file://${buildDir}/maven-repo" // Output repository for JitPack
+        }
+    }
+}
+
+// Disable signing for JitPack
+afterEvaluate {
+    if (!project.hasProperty("signing.keyId")) {
+        tasks.withType(Sign).each { it.enabled = false }
+    }
+}
